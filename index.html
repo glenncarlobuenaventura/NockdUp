@@ -1522,11 +1522,7 @@ let BG=null;
 /* gen = function that makes the card canvas; sid = shoot id when the card belongs to one shoot (its photo is kept on the shoot) */
 async function showCard(title,gen,fn,sid){
   U.shareBg=null;U.cardGen=gen;U.cardTitle=title;U.cardFn=fn;U.cardSid=sid||null;
-  /* ask for a background photo first */
-  const sh=getShoot(U.cardSid),has=!!(sh&&sh.photo);
-  openSheet('<h3 style="margin-bottom:6px">'+esc(title)+'</h3><div class="sub" style="margin-bottom:14px">Add a photo to the background?</div>'+
-    '<div class="photoask">'+photoInput('card','','Take a Photo',true)+photoInput('card','','Choose a Photo',false)+'</div>'+
-    '<div class="row" style="margin-top:12px"><button class="btn pri" data-act="cardGo">'+(has?'USE CURRENT PHOTO':'CONTINUE WITHOUT PHOTO')+'</button><button class="btn" data-act="closeSheet">Cancel</button></div>');
+  await paintCard();
 }
 async function paintCard(){
   BG=(!U.cardSid&&U.shareBg)?await loadImg(U.shareBg):null;
@@ -1638,7 +1634,6 @@ ACT.delShoot=a=>{
   if(U.confirm!=='del:'+a){U.confirm='del:'+a;render();return;}
   S.shoots=S.shoots.filter(s=>s.id!==a);if(S.ui.activeId===a)S.ui.activeId=null;U.confirm=null;U.screen=null;saveNow();render();toast('Shoot deleted');
 };
-ACT.cardGo=async()=>{toast('Making your card…');await paintCard();};
 ACT.rmCardBg=async()=>{if(U.cardSid){const s=getShoot(U.cardSid);if(s){s.photo='';saveNow();}}else U.shareBg=null;await paintCard();};
 ACT.rmPhoto=a=>{const s=getShoot(a);if(s){s.photo='';saveNow();render();}};
 ACT.viewEnd=a=>{
